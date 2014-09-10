@@ -2,21 +2,25 @@ FROM ubuntu:10.04
 
 RUN apt-get update
 
-RUN apt-get install -y curl
-RUN apt-get install -y zlib1g-dev
-RUN apt-get install -y ssh
-RUN apt-get install -y openssl
-RUN apt-get install -y perl
-RUN apt-get install -y libcurl4-gnutls-dev
-RUN apt-get install -y expat
-RUN apt-get install -y tk8.5
-RUN apt-get install -y gettext
-RUN apt-get install -y python
+RUN apt-get install -y  -y --force-yes \
+    curl \
+    zlib1g-dev \
+    ssh \
+    openssl \
+    perl \
+    libcurl4-gnutls-dev \
+    expat \
+    tk8.5 \
+    gettext \
+    python \
+    #
 
-RUN mkdir -p /app/git-static-src /app/git-static
-RUN curl https://www.kernel.org/pub/software/scm/git/git-2.1.0.tar.gz | tar xzv -C /app/git-static-src
+RUN mkdir -p /tmp/git/src /tmp/git/static
+RUN curl https://www.kernel.org/pub/software/scm/git/git-2.1.0.tar.gz | tar xzv -C /tmp/git/src
 
-WORKDIR /app/git-static-src/git-2.1.0
-RUN ./configure --prefix=/app/git-static CFLAGS="${CFLAGS} -static"
+WORKDIR /tmp/git/src/git-2.1.0
+RUN ./configure --prefix=/tmp/git/static/git-2.1.0 CFLAGS="${CFLAGS} -static"
 RUN make
 RUN make install
+
+RUN tar czvf /tmp/git/static/git-static-2.1.0-ubuntu-10.04.tar.gz -C /tmp/git/static/git-2.1.0 .
